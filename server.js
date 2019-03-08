@@ -2,43 +2,64 @@ const express = require('express')
 const fs = require('fs')
 const path = require('path')
 const app = express()
+const helper = require('./helper')
 
 function logUser(req) {
   console.log(req.connection.remoteAddress);
 }
 
 app.use(express.static(path.join(__dirname, 'public')))
-const folder = 'C:/Users/User/Downloads/'
+const folder = 'C:/Users/User/Downloads'
 
 app.get('/', function(req, res) {
   logUser(req);
-  // res.sendFile(path.join(__dirname + '/index.htm'))
+  res.sendFile(path.join(__dirname + '/index.htm'))
+})
+
+app.get('/api', function(req, res) {
+  logUser(req);
+
   var path=''
   if (typeof req.query.id !== 'undefined' && req.query.id !== null) {
     path=req.query.id;
   }
+  result = helper.getDirList(folder, path);
+  curDir = folder + '' + path;
+  jsonRespone = {cur:path,files:result}
+  console.log(result);
+  res.contentType('application/json');
+  res.send(JSON.stringify(jsonRespone));
+})
 
-  var curFolder = folder+path;
+app.get('/no-js', function(req, res) {
+  logUser(req);
 
-  var out=''
-  fs.readdirSync(curFolder).forEach(file => {
-    // console.log(file);
-    var path_string = curFolder+'/'+file;
-    var link = path+'/'+file;
-    if(fs.lstatSync(path_string).isDirectory())
-      out+='<a href="/?id='+link+'">'+file+'</a> : Folder</br>\n';
+  var path=''
+  if (typeof req.query.id !== 'undefined' && req.query.id !== null) {
+    path=req.query.id;
+  }
+  result = helper.getDirList(folder, path);
+  
+  var out = '';
+  result.forEach(function(curItem) {
+    if(curItem.type==0)
+      out+='<a href="/no-js?id='+link+'">'+file+'</a> : Folder</br>\n';
     else
       out+='<a href="/video?id='+link+'">'+file+'</a> : File</br>\n';
-  });
+  })
 
-  res.send(out+"Hello")
+  res.send(out);
 })
 
 app.get('/video', function(req, res) {
   logUser(req);
   var path = folder+''+req.query.id;
-  // console.log(path)
-  // const path = 'assets/sample.mp4'
+
+  if (!fs.existsSync(path)) {
+    res.send('Video Not Found!');
+    return ;
+  }
+
   const stat = fs.statSync(path)
   const fileSize = stat.size
   const range = req.headers.range
