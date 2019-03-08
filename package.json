@@ -9,8 +9,7 @@
   "scripts": {
     "start": "nodemon server.js"
   },
-  "author": "daspinola",
-  "license": "MIT",
+  "author": "snehalkr",
   "dependencies": {
     "express": "^4.15.3",
     "nodemon": "^1.11.0"
