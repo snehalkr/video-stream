@@ -26,7 +26,6 @@ app.get('/api', function(req, res) {
   result = helper.getDirList(folder, path);
   curDir = folder + '' + path;
   jsonRespone = {cur:path,files:result}
-  console.log(result);
   res.contentType('application/json');
   res.send(JSON.stringify(jsonRespone));
 })
@@ -42,10 +41,11 @@ app.get('/no-js', function(req, res) {
   
   var out = '';
   result.forEach(function(curItem) {
+    link = path + '/' + curItem.link;
     if(curItem.type==0)
-      out+='<a href="/no-js?id='+link+'">'+file+'</a> : Folder</br>\n';
+      out+='<a href="/no-js?id='+link+'">' + curItem.link + '</a> : Folder</br>\n';
     else
-      out+='<a href="/video?id='+link+'">'+file+'</a> : File</br>\n';
+      out+='<a href="/video?id='+link+'">' + curItem.link + '</a> : File</br>\n';
   })
 
   res.send(out);
@@ -65,7 +65,6 @@ app.get('/video', function(req, res) {
   const range = req.headers.range
 
   var id = req.query.id;
-  console.log(id)
 
   if (range) {
     const parts = range.replace(/bytes=/, "").split("-")
