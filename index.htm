@@ -2,7 +2,18 @@
 	<head>
     	<title>Video stream sample</title>
 		<script type='text/javascript'>
-			var cur_path='';
+			function error(code, message) {
+				alert('Error: ' + code + ' ' + message);
+				var errorMsg = '<h1>Error: ' + code + '</h1>' + message;
+				document.getElementById("error").innerHTML = errorMsg;
+			}
+
+
+			function init() {
+				cur_path = '';
+				load('/');
+			}
+
 			function load(path) {
 				loadDoc(cur_path + path);
 			}
@@ -12,14 +23,16 @@
 				xhttp.onreadystatechange = function() {
 					if (this.readyState == 4 && this.status == 200) {
 						var jsonObj = JSON.parse(this.responseText);
-						console.log(jsonObj);
 						var htmlOut='';
 						cur_path = jsonObj.cur;
+						document.getElementById("title").innerHTML = addTitle(cur_path);
 						jsonObj.files.forEach(function (curObj) {
 							htmlOut+=addLink(curObj.link, curObj.type)
 							document.getElementById("demo").innerHTML += curObj.link;
 						})
 						document.getElementById("demo").innerHTML = htmlOut;
+					} else if(this.readyState == 4) {
+						error(this.status, this.statusText);
 					}
 				};
 				xhttp.open("GET", "/api?id="+path, true);
@@ -27,28 +40,81 @@
 			}
 
 			function openLink(element) {
-				console.log(element.textContent);
 				load(element.textContent+'/');
+				return false;
+			}
+
+			function openLinkAbs(element) {
+				loadDoc(element.id);
 				return false;
 			}
 
 			function addLink(link, type) {
 				var link;
 				if(type==0) {
-					link = '<a href="/api?id=' + link + '" onclick="return openLink(this);">' + link + '</a></br>';
+					link = '<a href="/no-js?id=' + link + '" onclick="return openLink(this);">' + link + '</a></br>';
 					//link = '<a href="/api?id=' + link + '" onclick="return openLink(this);">' + link + '</a><button onclick="return openLink(this);">' + link + '</button></br>';
 				} else {
-					link = '<a href="/video?id=' + cur_path + '/' + link + '">' + link + '</a></br>';
+					link = '<a href="/video?id=' + cur_path + '/' + link + '" onclick="return openVideo(this);">' + link + '</a></br>';
 				}
 				return link;
 			}
+
+			function addTitle(path) {
+				var res='';
+				var cur='',link='';
+				
+				console.log('######'+path);
+				for (var i = 0; i < path.length; i++) {
+					var c = path.charAt(i);
+					console.log(c);
+					if(c=='/') {
+						cur+=c;
+						link+=c;
+						res+=' <a id="' + link + '" onclick="return openLinkAbs(this);" href="">' + cur + '</a> ';
+						cur='';
+					} else {
+						cur+=c;
+						link+=c;
+					}
+				}
+				console.log(res);
+				return res;
+			}
+
+			function openVideo(element) {
+				document.getElementById("title").style.display="none";
+				document.getElementById("demo").style.display="none";
+				playVideo(element.href);
+				return false;
+			}
+
+			function playVideo(path) {
+				htm='<a href="" onclick="return closeVideo();">Back</a><br>'
+				htm+='<video id="videoPlayer" width="1280" height="720" controls muted="muted" autoplay>';
+				htm+='<source src="' + path + '"></video>';
+				document.getElementById("video").innerHTML=htm;
+			}
+
+			function closeVideo() {
+				document.getElementById("title").style.display="block";
+				document.getElementById("demo").style.display="block";
+				var ele = document.getElementById("video");
+				while(ele.firstChild) {
+					ele.removeChild(ele.firstChild);
+				}
+				return false;
+			}
     </script>
 	</head>
-	<body onload="load('/')">
+	<body onload="init()">
 		<noscript>
 			<a href='/no-js'>Go here</a>
 			<meta http-equiv="refresh" content="0;url=/no-js">
 		</noscript>
+		<div id='error'></div>
+		<div id='title'></div>
 		<div id='demo'></div>
+		<div id='video'></div>
 	</body>
 </html>
