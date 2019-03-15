@@ -5,6 +5,7 @@
 			function error(code, message) {
 				alert('Error: ' + code + ' ' + message);
 				var errorMsg = '<h1>Error: ' + code + '</h1>' + message;
+				clrscr();
 				document.getElementById("error").innerHTML = errorMsg;
 			}
 
@@ -103,6 +104,19 @@
 					ele.removeChild(ele.firstChild);
 				}
 				return false;
+			}
+
+			function clrscr() {
+				deleteElement(document.getElementById('error'));
+				deleteElement(document.getElementById('title'));
+				deleteElement(document.getElementById('demo'));
+				deleteElement(document.getElementById('video'));
+			}
+
+			function deleteElement(element) {
+				while(element.firstChild) {
+					element.removeChild(element.firstChild);
+				}
 			}
     </script>
 	</head>
