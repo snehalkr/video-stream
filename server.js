@@ -81,7 +81,7 @@ app.get('/no-js', function(req, res) {
 });
 
 app.get('/video', function(req, res) {
-	helper.loadVideo(getRoot(folder), req, res);
+	helper.loadVideo(getRoot(req), req, res);
 });
 
 app.get('/select-root', function(req, res) {
