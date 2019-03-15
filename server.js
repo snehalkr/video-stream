@@ -67,26 +67,26 @@ app.use(session({ secret: 'keyboard cat', resave: false, saveUninitialized: true
 
 app.get('/', function(req, res) {
 	res.sendFile(path.join(__dirname + '/index.htm'));
-})
+});
 
 app.get('/api', function(req, res) {
 	jsonRespone = helper.getDirListJSON(getRoot(req), getPath(req));
 	res.contentType('application/json');
 	res.send(JSON.stringify(jsonRespone));
-})
+});
 
 app.get('/no-js', function(req, res) {
-	var out = helper.getDirListHTML(getRoot(req), getPath(path));
+	var out = helper.getDirListHTML(getRoot(req), getPath(req));
 	res.send(out);
-})
+});
 
 app.get('/video', function(req, res) {
 	helper.loadVideo(getRoot(folder), req, res);
-})
+});
 
 app.get('/select-root', function(req, res) {
 	res.sendFile(path.join(__dirname + '/select-root.htm'));
-})
+});
 
 app.post('/select-root', function(req, res) {
 	var str = '';
@@ -110,8 +110,8 @@ app.post('/select-root', function(req, res) {
 			res.send(out);
 		}
 	});
-})
+});
 
 app.listen(3000, function () {
 	console.log('Listening on port 3000!')
-})
+});
