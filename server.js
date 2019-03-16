@@ -5,8 +5,7 @@ const app = express();
 // var cookieParser = require('cookie-parser');
 var session = require('express-session');
 const helper = require('./helper')
-var folders = ['C:/Users/User/Downloads', 'C:/unity']
-const folder = 'C:/Users/User/Downloads'
+var folders;
 
 
 function logUser(req) {
@@ -15,9 +14,9 @@ function logUser(req) {
 
 function getRoot(req) {
 	if(req.session.root == 1) {
-		return folders[1];
+		return folders[1].path;
 	}
-	return folders[0];
+	return folders[0].path;
 }
 
 function getPath(req) {
@@ -62,7 +61,7 @@ app.use(function(req, res, next) {
 	next();
 })
 // app.use(cookieParser());
-app.use(session({ secret: 'keyboard cat', resave: false, saveUninitialized: true, cookie: { maxAge: 60000 }}))
+app.use(session({ secret: 'keyboard cat', resave: false, saveUninitialized: true, cookie: { maxAge: 6000000 }}))
 
 
 app.get('/', function(req, res) {
@@ -113,5 +112,7 @@ app.post('/select-root', function(req, res) {
 });
 
 app.listen(3000, function () {
-	console.log('Listening on port 3000!')
+	config = helper.loadConfig('config.json');
+	folders = config.folders;
+	console.log('Listening on port 3000!');
 });

@@ -88,4 +88,11 @@ exports.loadVideo = function(folder, req, res) {
 		fs.createReadStream(path).pipe(res)
 	}
 }
+
+exports.loadConfig = function(config) {
+	var ret;
+	data = fs.readFileSync(config);
+	ret=JSON.parse(data);
+	return ret;
+}
 // console.log(this.getDirList('C:/unity/nodejs/video-stream-sample'));
